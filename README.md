@@ -4,6 +4,8 @@ This repository contains the implementation of EqVIO: An Equivariant Filter (EqF
 
 Please see https://pvangoor.github.io/eqvio_docs/ for the documentation.
 
+This fork of the EqVIO allows for attitude innovation from ArduPilot to allow for more accurate attitude data 
+
 ## Dependencies
 
 - Eigen 3: `sudo apt install libeigen3-dev`
