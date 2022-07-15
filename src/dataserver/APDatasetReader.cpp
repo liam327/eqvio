@@ -35,6 +35,10 @@ APDatasetReader::APDatasetReader(const std::string& datasetFileName, const YAML:
     ImageCSVFile = CSVFile(datasetDir + "cam.csv");
     ImageCSVFile.skipLine(); // skip the header
 
+    if (UseAttitudeInnovation==true){
+        AttitudeCSVFile = CSVFile(datasetDir+"attitude.csv");
+    }
+
     // Set up simulator
     const std::string groundtruthFileName = datasetDir + "ground_truth.csv";
     simulator = std::make_unique<VIOSimulator>(groundtruthFileName, simSettings);
@@ -73,6 +77,23 @@ std::unique_ptr<IMUVelocity> APDatasetReader::nextIMU() {
     temp.gyrBiasVel.setZero();
     temp.accBiasVel.setZero();
     return std::make_unique<IMUVelocity>(temp);
+}
+
+std::unique_ptr<StampedAttiude> APDatasetReader::nextAttitude() {
+    if (!AttitudeCSVFile) {
+        return nullptr;
+    }
+
+    CSVLine attitudeLine = AttitudeCSVFile.nextLine();
+    StampedAttiude temp;
+    //could maybe do something like 
+    temp.stamp = attitudeLine[0]
+    temp.quat(0) = attitudeLine[1]
+    temp.quat(1) = attitudeLine[2]
+    temp.quat(2) = attitudeLine[3]
+    temp.quat(3) = attitudeLine[4]
+    //temp.quat not sure here 
+    return std::make_unique<StampedAttiude>(temp);
 }
 
 std::unique_ptr<StampedImage> APDatasetReader::nextImage() {

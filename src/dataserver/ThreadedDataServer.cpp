@@ -20,22 +20,43 @@
 MeasurementType ThreadedDataServer::nextMeasurementType() const {
     std::unique_lock lck(ioMutex);
     queuesReady_cv.wait(
-        lck, [this] { return (IMUDataFinished || !IMUQueue.empty()) && (imageDataFinished || !imageQueue.empty()); });
+        lck, [this] { return (IMUDataFinished || !IMUQueue.empty()) && (imageDataFinished || !imageQueue.empty()) && (AttitudeDataFinished || !AttitudeQueue.empty()); });
 
     // Check if any of the data is finished
-    if (imageQueue.empty() && IMUQueue.empty()) {
+    if (imageQueue.empty() && IMUQueue.empty() && IMUQueue.empty()) {
         return MeasurementType::None;
-    } else if (imageQueue.empty() && !IMUQueue.empty()) {
+    } 
+    //check to see if two of the queues are empty 
+    else if (imageQueue.empty() && !IMUQueue.empty() && AttitudeQueue.empty()) {
         return MeasurementType::IMU;
-    } else if (!imageQueue.empty() && IMUQueue.empty()) {
+    } 
+    else if (!imageQueue.empty() && IMUQueue.empty() && AttitudeQueue.empty()) {
         return MeasurementType::Image;
+    }
+    else if (imageQueue.empty() && IMUQueue.empty() && !AttitudeQueue.empty()) {
+        return MeasurementType::Attitude;
+    }
+
+    //check to see if one of the queues is empty  
+    if (imageQueue.empty() && !IMUQueue.empty() && !AttitudeQueue.empty()) {
+        return (AttitudeQueue.front().stamp <= IMUQueue.front().stamp) ? MeasurementType::Attitude : MeasurementType::IMU;
+    } 
+    else if (!imageQueue.empty() && IMUQueue.empty() && !AttitudeQueue.empty()) {
+        return (AttitudeQueue.front().stamp <= imageQueue.front().stamp) ? MeasurementType::Attitude : MeasurementType::Image;
+    }
+    else if (!imageQueue.empty() && !IMUQueue.empty() && AttitudeQueue.empty()) {
+        return (IMUQueue.front().stamp <= imageQueue.front().stamp) ? MeasurementType::IMU : MeasurementType::Image;
     }
 
     // Otherwise, compare the stamps
-    if (imageQueue.front().stamp <= IMUQueue.front().stamp) {
+    if ((imageQueue.front().stamp <= IMUQueue.front().stamp) && (imageQueue.front().stamp <= AttitudeQueue.front().stamp)) {
         return MeasurementType::Image;
-    } else {
+    } 
+    else if ((IMUQueue.front().stamp <= imageQueue.front().stamp) && (IMUQueue.front().stamp <= AttitudeQueue.front().stamp)){
         return MeasurementType::IMU;
+    }
+    else {
+        return MeasurementType::Attitude;
     }
 }
 
@@ -53,6 +74,13 @@ IMUVelocity ThreadedDataServer::getIMU() {
     return data;
 }
 
+StampedAttiude ThreadedDataServer::getAttitude() {
+    std::unique_lock lck(ioMutex);
+    StampedAttiude data = AttitudeQueue.front();
+    AttitudeQueue.pop();
+    return data;
+}
+
 double ThreadedDataServer::nextTime() const {
     const MeasurementType measType = nextMeasurementType();
     std::unique_lock lck(ioMutex);
@@ -61,6 +89,9 @@ double ThreadedDataServer::nextTime() const {
     }
     if (measType == MeasurementType::Image) {
         return imageQueue.front().stamp;
+    }
+    if (measType == MeasurementType::Attitude) {
+        return AttitudeQueue.front().stamp;
     }
     return std::nan("");
 }
@@ -71,18 +102,27 @@ ThreadedDataServer::ThreadedDataServer(std::unique_ptr<DatasetReaderBase>&& data
 }
 
 void ThreadedDataServer::fillQueues() {
-    while ((!IMUDataFinished || !imageDataFinished) && !destructorCalled) {
+    while ((!IMUDataFinished || !imageDataFinished|| !AttitudeDataFinished) && !destructorCalled) {
 
         while (!queuesFilled()) {
             std::unique_lock lck(ioMutex);
 
-            // Fill up the image and IMU queues
+            // Fill up the image, IMU and attitude queues
             if (imageQueue.size() < maxImageQueueSize) {
                 std::unique_ptr<StampedImage> nextImageData = datasetReaderPtr->nextImage();
                 if (nextImageData) {
                     imageQueue.emplace(*nextImageData);
                 } else {
                     imageDataFinished = true;
+                }
+            }
+
+            if (AttitudeQueue.size() < maxAttitudeQueueSize) {
+                std::unique_ptr<StampedAttiude> nextAttitudeData = datasetReaderPtr->nextAttitude();
+                if (nextAttitudeData) {
+                    AttitudeQueue.emplace(*nextAttitudeData);
+                } else {
+                    AttitudeDataFinished = true;
                 }
             }
 
@@ -106,7 +146,8 @@ void ThreadedDataServer::fillQueues() {
 bool ThreadedDataServer::queuesFilled() const {
     std::unique_lock lck(ioMutex);
     return (IMUDataFinished || IMUQueue.size() == maxIMUQueueSize) &&
-           (imageDataFinished || imageQueue.size() == maxImageQueueSize);
+           (imageDataFinished || imageQueue.size() == maxImageQueueSize) &&
+           (AttitudeDataFinished || AttitudeQueue.size() == maxAttitudeQueueSize);
 }
 
 ThreadedDataServer::~ThreadedDataServer() {

@@ -26,13 +26,22 @@
 #include "yaml-cpp/yaml.h"
 
 /** @brief The possible measurement types encountered in a VIO dataset */
-enum class MeasurementType { Image, IMU, None };
+enum class MeasurementType { Image, IMU, Attitude, None };
 
 /** @brief A struct carrying an openCV image and a timestamp */
 struct StampedImage {
     cv::Mat image; ///< The image data
     double stamp;  ///< The time stamp of the image
 };
+
+/** @brief An ArduPilot Attitude reading.
+ *
+ * StampedAttitude carries a measurment of the attitude in quaternion form along with a time stamp
+ */
+struct StampedAttiude {
+    double stamp;
+    Eigen::Vector4d quat;
+}
 
 /** @brief The common interface of all dataset readers.
  *
@@ -52,6 +61,12 @@ class DatasetReaderBase {
      * @return a pointer to the next IMU data in the dataset. The pointer is null if no data remains
      */
     virtual std::unique_ptr<IMUVelocity> nextIMU() = 0;
+
+    /** @brief get the next Attiude data.
+     *
+     * @return a pointer to the next Attitude data in the dataset. The pointer is null if no data remains
+     */
+    virtual std::unique_ptr<StampedAttiude> nextAttitude() = 0;
 
     /** @brief Read a camera file.
      *

@@ -47,6 +47,8 @@ class DataServerBase {
     virtual StampedImage getImage() = 0;
     /** @brief Get the next IMU data. */
     virtual IMUVelocity getIMU() = 0;
+    /** @brief Get the next Attitude data. */
+    virtual IMUVelocity getAttitude() = 0;
     /** @brief Get the timestamp of the next data, IMU or image.*/
     virtual double nextTime() const = 0;
 

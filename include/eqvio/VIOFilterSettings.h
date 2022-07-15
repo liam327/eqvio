@@ -95,6 +95,7 @@ struct VIOFilter::Settings {
     bool useMedianDepth = true; ///< If true, use the median depth of all current landmarks to initialise new landmarks.
     bool useFeaturePredictions = false; ///< If true, pass the estimated positions of features to the front-end.
     bool useEquivariantOutput = true;   ///< If true, use the equivariant output approximation.
+    bool UseAttitudeInnovation = false;   ///< If true, use the attitude innovation with measuremnts from ardupilot
     CoordinateChoice coordinateChoice = CoordinateChoice::Euclidean; ///< The local coordinate chart choice.
     liepp::SE3d cameraOffset = liepp::SE3d::Identity(); ///< The initial estimate of the camera w.r.t. the IMU.
 
@@ -146,6 +147,7 @@ inline VIOFilter::Settings::Settings(const YAML::Node& configNode) {
     safeConfig(configNode, "settings:useMedianDepth", useMedianDepth);
     safeConfig(configNode, "settings:useFeaturePredictions", useFeaturePredictions);
     safeConfig(configNode, "settings:useEquivariantOutput", useEquivariantOutput);
+    safeConfig(configNode, "settings:UseAttitudeInnovation", UseAttitudeInnovation);
 
     coordinateChoice = coordinateSelection(configNode);
 

@@ -18,12 +18,39 @@
 #include "eqvio/dataserver/SimpleDataServer.h"
 
 MeasurementType SimpleDataServer::nextMeasurementType() const {
+
+    //check to see if we have all types of data. In this case compare times 
+    if (nextImageData && nextIMUData && nextAttitudeData) {
+        if ((nextImageData.stamp <= IMUQueue.front().stamp) && (nextImageData.stamp <= nextAttitudeData.stamp)) {
+            return MeasurementType::Image;
+        } 
+        else if ((nextIMUData.stamp <= nextImageData.stamp) && (nextIMUData.stamp <= nextAttitudeData.stamp)){
+            return MeasurementType::IMU;
+        }
+        else {
+            return MeasurementType::Attitude;
+        }
+    } 
+
+    //check to see if we have two type of data 
     if (nextImageData && nextIMUData) {
-        return (nextImageData->stamp <= nextIMUData->stamp) ? MeasurementType::Image : MeasurementType::IMU;
-    } else if (nextImageData) {
+        return (nextImageData.stamp <= nextIMUData.stamp) ? MeasurementType::Image : MeasurementType::IMU;
+    }
+    else if (nextImageData && nextAttitudeData) {
+        return (nextImageData.stamp <= nextAttitudeData.stamp) ? MeasurementType::Image : MeasurementType::Attitude;
+    }
+    else if (nextIMUData && nextAttitudeData) {
+        return (nextIMUData.stamp <= nextAttitudeData.stamp) ? MeasurementType::IMU : MeasurementType::Attitude;
+    }
+    
+    else if (nextImageData) {
         return MeasurementType::Image;
-    } else if (nextIMUData) {
+    } 
+    else if (nextIMUData) {
         return MeasurementType::IMU;
+    } 
+    else if (nextAttitudeData) {
+        return MeasurementType::Attitude;
     }
     return MeasurementType::None;
 }
@@ -40,18 +67,29 @@ IMUVelocity SimpleDataServer::getIMU() {
     return retIMUData;
 }
 
+StampedAttiude SimpleDataServer::getAttitude() {
+    StampedAttiude retAttitudeData = *nextAttitudeData;
+    nextAttitudeData = datasetReaderPtr->nextAttitude();
+    return retAttitudeData;
+}
+
 SimpleDataServer::SimpleDataServer(std::unique_ptr<DatasetReaderBase>&& datasetReader)
     : DataServerBase(std::move(datasetReader)) {
     nextImageData = datasetReaderPtr->nextImage();
     nextIMUData = datasetReaderPtr->nextIMU();
+    nextAttitudeData = datasetReaderPtr->nextAttitude();
 }
 
 double SimpleDataServer::nextTime() const {
     MeasurementType nextMT = nextMeasurementType();
     if (nextMT == MeasurementType::Image) {
-        return nextImageData->stamp;
-    } else if (nextMT == MeasurementType::IMU) {
-        return nextIMUData->stamp;
+        return nextImageData.stamp;
+    } 
+    else if (nextMT == MeasurementType::IMU) {
+        return nextIMUData.stamp;
+    }
+    else if (nextMT == MeasurementType::Attitude) {
+        return nextAttitudeData.stamp;
     }
     return std::nan("");
 }

@@ -31,10 +31,12 @@ class APDatasetReader : public DatasetReaderBase {
     std::string cam_dir;  ///< The directory where camera images are stored.
     CSVFile IMUCSVFile;   ///< The CSV file containing IMU velocities
     CSVFile ImageCSVFile; ///< The CSV file containing image stamps and relative file names.
+    CSVFile AttitudeCSVFile; ///< The CSV file containing attitude measurments
 
   public:
     virtual std::unique_ptr<StampedImage> nextImage() override;
     virtual std::unique_ptr<IMUVelocity> nextIMU() override;
+    virtual std::unique_ptr<StampedAttiude> nextAttitude() override;
 
     APDatasetReader() = default;
 
