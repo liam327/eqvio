@@ -21,10 +21,10 @@ MeasurementType SimpleDataServer::nextMeasurementType() const {
 
     //check to see if we have all types of data. In this case compare times 
     if (nextImageData && nextIMUData && nextAttitudeData) {
-        if ((nextImageData.stamp <= IMUQueue.front().stamp) && (nextImageData.stamp <= nextAttitudeData.stamp)) {
+        if ((nextImageData->stamp <= nextIMUData->stamp) && (nextImageData->stamp<= nextAttitudeData->stamp)) {
             return MeasurementType::Image;
         } 
-        else if ((nextIMUData.stamp <= nextImageData.stamp) && (nextIMUData.stamp <= nextAttitudeData.stamp)){
+        else if ((nextIMUData->stamp<= nextImageData->stamp) && (nextIMUData->stamp <= nextAttitudeData->stamp)){
             return MeasurementType::IMU;
         }
         else {
@@ -34,13 +34,13 @@ MeasurementType SimpleDataServer::nextMeasurementType() const {
 
     //check to see if we have two type of data 
     if (nextImageData && nextIMUData) {
-        return (nextImageData.stamp <= nextIMUData.stamp) ? MeasurementType::Image : MeasurementType::IMU;
+        return (nextImageData->stamp <= nextIMUData->stamp) ? MeasurementType::Image : MeasurementType::IMU;
     }
     else if (nextImageData && nextAttitudeData) {
-        return (nextImageData.stamp <= nextAttitudeData.stamp) ? MeasurementType::Image : MeasurementType::Attitude;
+        return (nextImageData->stamp <= nextAttitudeData->stamp) ? MeasurementType::Image : MeasurementType::Attitude;
     }
     else if (nextIMUData && nextAttitudeData) {
-        return (nextIMUData.stamp <= nextAttitudeData.stamp) ? MeasurementType::IMU : MeasurementType::Attitude;
+        return (nextIMUData->stamp <= nextAttitudeData->stamp) ? MeasurementType::IMU : MeasurementType::Attitude;
     }
     
     else if (nextImageData) {
@@ -83,13 +83,13 @@ SimpleDataServer::SimpleDataServer(std::unique_ptr<DatasetReaderBase>&& datasetR
 double SimpleDataServer::nextTime() const {
     MeasurementType nextMT = nextMeasurementType();
     if (nextMT == MeasurementType::Image) {
-        return nextImageData.stamp;
+        return nextImageData->stamp;
     } 
     else if (nextMT == MeasurementType::IMU) {
-        return nextIMUData.stamp;
+        return nextIMUData->stamp;
     }
     else if (nextMT == MeasurementType::Attitude) {
-        return nextAttitudeData.stamp;
+        return nextAttitudeData->stamp;
     }
     return std::nan("");
 }

@@ -34,15 +34,6 @@ struct StampedImage {
     double stamp;  ///< The time stamp of the image
 };
 
-/** @brief An ArduPilot Attitude reading.
- *
- * StampedAttitude carries a measurment of the attitude in quaternion form along with a time stamp
- */
-struct StampedAttiude {
-    double stamp;
-    Eigen::Vector4d quat;
-}
-
 /** @brief The common interface of all dataset readers.
  *
  * This abstraction helps to create a common interface between different dataset formats like EuRoC and UZH-FPV. It is

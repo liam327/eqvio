@@ -25,6 +25,15 @@
 /// The approximate value of acceleration due to gravity.
 constexpr double GRAVITY_CONSTANT = 9.80665;
 
+/** @brief An ArduPilot Attitude reading.
+ *
+ * StampedAttitude carries a measurment of the attitude in quaternion form along with a time stamp
+ */
+struct StampedAttiude {
+    double stamp;
+    Eigen::Vector4d quat;
+};
+
 /** @brief An Inertial Measurement Unit (IMU) reading.
  *
  * IMUVelocity objects contain a gyroscope and accelerometer measurement, along with a timestamp. Additionally, they can

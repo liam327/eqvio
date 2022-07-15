@@ -35,9 +35,8 @@ APDatasetReader::APDatasetReader(const std::string& datasetFileName, const YAML:
     ImageCSVFile = CSVFile(datasetDir + "cam.csv");
     ImageCSVFile.skipLine(); // skip the header
 
-    if (UseAttitudeInnovation==true){
-        AttitudeCSVFile = CSVFile(datasetDir+"attitude.csv");
-    }
+    AttitudeCSVFile = CSVFile(datasetDir+"attitude.csv");
+    AttitudeCSVFile.skipLine(); //skip header
 
     // Set up simulator
     const std::string groundtruthFileName = datasetDir + "ground_truth.csv";
@@ -87,11 +86,11 @@ std::unique_ptr<StampedAttiude> APDatasetReader::nextAttitude() {
     CSVLine attitudeLine = AttitudeCSVFile.nextLine();
     StampedAttiude temp;
     //could maybe do something like 
-    temp.stamp = attitudeLine[0];
-    temp.quat[0] = attitudeLine[1];
-    temp.quat[1] = attitudeLine[2];
-    temp.quat[2] = attitudeLine[3];
-    temp.quat[3] = attitudeLine[4];
+    temp.stamp = std::stod(attitudeLine[0]);
+    temp.quat[0] = std::stod(attitudeLine[1]);
+    temp.quat[1] = std::stod(attitudeLine[2]);
+    temp.quat[2] = std::stod(attitudeLine[3]);
+    temp.quat[3] = std::stod(attitudeLine[4]);
     //temp.quat not sure here 
     return std::make_unique<StampedAttiude>(temp);
 }

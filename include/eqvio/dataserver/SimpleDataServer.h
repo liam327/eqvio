@@ -34,7 +34,7 @@ class SimpleDataServer : public DataServerBase {
     virtual MeasurementType nextMeasurementType() const override;
     virtual StampedImage getImage() override;
     virtual IMUVelocity getIMU() override;
-    virtual IMUVelocity getAttitude() override;
+    virtual StampedAttiude getAttitude() override;
     virtual double nextTime() const override;
 
     /** @brief construct the simple data server from a dataset reader.
