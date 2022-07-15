@@ -262,6 +262,12 @@ int main(int argc, char const* argv[]) {
             ++imuDataCounter;
         }
 
+        else if (measType == MeasurementType::Attitude){
+            std::cout<<"We have made it into a attitude function";
+            StampedAttiude AttitudeData = dataServer->getAttitude();
+            filter.processAttitudeData(AttitudeData);
+        }
+
         if (stopTime > 0 && filter.getTime() > stopTime) {
             break;
         }

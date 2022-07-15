@@ -189,6 +189,14 @@ class VIOFilter {
      */
     void processVisionData(const VisionMeasurement& measurement);
 
+    /** @brief Process an attitude measurement
+     *
+     * @param AttitudeMeas The attitude measurment to process
+     *
+     * This si a test version. The only thing that happens here is we integrate up to the time and output the value of the attitude measurment.
+     */
+    void processAttitudeData(const StampedAttiude& AttitudeMeas);
+
     //-------------------------
     // Output
     //-------------------------

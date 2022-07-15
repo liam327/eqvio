@@ -93,6 +93,11 @@ void VIOFilter::processIMUData(const IMUVelocity& imuVelocity) {
     currentTime = imuVelocity.stamp;
 }
 
+void VIOFilter::processAttitudeData(const StampedAttiude& AttitudeMeas){
+    integrateUpToTime(AttitudeMeas.stamp, !settings->fastRiccati);
+    std::cout<<"t:"<<AttitudeMeas.stamp<<"qw:"<<AttitudeMeas.quat[0];
+}
+
 void VIOFilter::initialiseFromIMUData(const IMUVelocity& imuVelocity) {
     xi0.sensor.inputBias.setZero();
     xi0.sensor.pose.setIdentity();
