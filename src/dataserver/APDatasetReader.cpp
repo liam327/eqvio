@@ -87,11 +87,11 @@ std::unique_ptr<StampedAttiude> APDatasetReader::nextAttitude() {
     CSVLine attitudeLine = AttitudeCSVFile.nextLine();
     StampedAttiude temp;
     //could maybe do something like 
-    temp.stamp = attitudeLine[0]
-    temp.quat(0) = attitudeLine[1]
-    temp.quat(1) = attitudeLine[2]
-    temp.quat(2) = attitudeLine[3]
-    temp.quat(3) = attitudeLine[4]
+    temp.stamp = attitudeLine[0];
+    temp.quat(0) = attitudeLine[1];
+    temp.quat(1) = attitudeLine[2];
+    temp.quat(2) = attitudeLine[3];
+    temp.quat(3) = attitudeLine[4];
     //temp.quat not sure here 
     return std::make_unique<StampedAttiude>(temp);
 }
