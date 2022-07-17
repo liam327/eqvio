@@ -34,6 +34,7 @@ class UZHFPVDatasetReader : public DatasetReaderBase {
   public:
     virtual std::unique_ptr<StampedImage> nextImage();
     virtual std::unique_ptr<IMUVelocity> nextIMU();
+    virtual std::unique_ptr<StampedAttiude> nextAttitude() override;
     virtual void readCamera(const std::string& cameraFileName);
 
     /** @brief Construct the ASL dataset reader from the given dataset directory and simulation settings. */

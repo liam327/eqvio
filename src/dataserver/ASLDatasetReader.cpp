@@ -75,6 +75,10 @@ std::unique_ptr<StampedImage> ASLDatasetReader::nextImage() {
     return std::make_unique<StampedImage>(temp);
 }
 
+std::unique_ptr<StampedAttiude> APDatasetReader::nextAttitude() {
+    return nullptr;
+}
+
 void ASLDatasetReader::readCamera(const std::string& cameraFileName) {
     YAML::Node cameraFileNode = YAML::LoadFile(cameraFileName);
 

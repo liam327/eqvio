@@ -34,6 +34,7 @@ class ASLDatasetReader : public DatasetReaderBase {
   public:
     virtual std::unique_ptr<StampedImage> nextImage() override;
     virtual std::unique_ptr<IMUVelocity> nextIMU() override;
+    virtual std::unique_ptr<StampedAttiude> nextAttitude() override;
     virtual void readCamera(const std::string& cameraFileName) override;
 
     /** @brief Construct the ASL dataset reader from the given dataset directory and simulation settings. */
