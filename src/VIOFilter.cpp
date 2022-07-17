@@ -93,11 +93,6 @@ void VIOFilter::processIMUData(const IMUVelocity& imuVelocity) {
     currentTime = imuVelocity.stamp;
 }
 
-void VIOFilter::processAttitudeData(const StampedAttiude& AttitudeMeas){
-    integrateUpToTime(AttitudeMeas.stamp, !settings->fastRiccati);
-    std::cout<<"t:"<<AttitudeMeas.stamp<<"qw:"<<AttitudeMeas.quat[0];
-}
-
 void VIOFilter::initialiseFromIMUData(const IMUVelocity& imuVelocity) {
     xi0.sensor.inputBias.setZero();
     xi0.sensor.pose.setIdentity();
@@ -190,6 +185,52 @@ bool VIOFilter::integrateUpToTime(const double& newTime, const bool doRiccati) {
     return true;
 }
 
+//This function will update the state with the measured attitude data 
+void VIOFilter::processAttitudeData(const StampedAttiude& AttitudeMeas){
+    integrateUpToTime(AttitudeMeas.stamp, !settings->fastRiccati);
+
+    //This is for testing purposes 
+    std::cout<<"t:"<<AttitudeMeas.stamp<<"qw:"<<AttitudeMeas.quat[0];
+
+/*     //A small value for the measuremtent noise of the attitude 
+    const double AttitudeNoise = 1e-5; 
+
+    const int N = xi0.cameraLandmarks.size();
+
+    // --------------------------
+    // Compute the EqF innovation
+    // --------------------------
+    //Find the rotation matrix nessecary for the innovation ytilda
+    const MatrixXd Rp = AttitudeMeas.quat[0]; 
+    const MatrixXd Rp0 = xi0.sensor.pose.R;
+    const MatrixXd RA = X.A.R;
+    
+    const MatrixXd Ct = coordinateSuite->outputMatrixCAttitude(N);
+    const MatrixXd QMat = MatrixXd::Identity(3, 3) * AttitudeNoise;
+
+    // Use the discrete update form
+    const auto& SInv = (Ct * Sigma * Ct.transpose() + QMat).inverse();
+    const auto& K = Sigma * Ct.transpose() * SInv;
+
+    const VectorXd yTilde = MatrixBase::log(Rp0.transpose()*Rp*RA.transpose());
+    const VectorXd Gamma = K * yTilde;
+    assert(!Gamma.hasNaN());
+
+    VIOGroup Delta;
+    if (settings->useDiscreteInnovationLift) {
+        Delta = coordinateSuite->liftInnovationDiscrete(Gamma, xi0);
+    } else {
+        Delta = VIOExp(coordinateSuite->liftInnovation(Gamma, xi0));
+    }
+    assert(!Delta.hasNaN());
+
+    X = Delta * X;
+    Sigma = Sigma - K * Ct * Sigma;
+
+    assert(!Sigma.hasNaN());
+    assert(!X.hasNaN()); */
+}
+
 void VIOFilter::processVisionData(const VisionMeasurement& measurement) {
     // Use the stored velocity input to bring the filter up to the current timestamp
     loopTimer.startTiming("propagation");
@@ -224,7 +265,7 @@ void VIOFilter::processVisionData(const VisionMeasurement& measurement) {
     loopTimer.startTiming("correction");
     const VisionMeasurement estimatedMeasurement = measureSystemState(stateEstimate(), measurement.cameraPtr);
     const VisionMeasurement measurementResidual = matchedMeasurement - estimatedMeasurement;
-    const MatrixXd Ct = coordinateSuite->outputMatrixC(xi0, X, matchedMeasurement, settings->useEquivariantOutput);
+    const MatrixXd Ct = coordinateSuite->outputMatrixCVision(xi0, X, matchedMeasurement, settings->useEquivariantOutput);
     const int N = xi0.cameraLandmarks.size();
     const MatrixXd QMat = MatrixXd::Identity(2 * N, 2 * N) * settings->measurementNoise * settings->measurementNoise;
 

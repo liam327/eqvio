@@ -170,7 +170,7 @@ int main(int argc, char const* argv[]) {
     }
     VIOWriter vioWriter(outputFileNameStream.str());
 
-    int imuDataCounter = 0, visionDataCounter = 0;
+    int imuDataCounter = 0, visionDataCounter = 0, AttitudeDataCounter = 0;
     const std::chrono::steady_clock::time_point loopStartTime = std::chrono::steady_clock::now();
     std::chrono::steady_clock::time_point rateLimitTimer = std::chrono::steady_clock::now();
 
@@ -243,7 +243,9 @@ int main(int argc, char const* argv[]) {
                 rateLimitTimer = std::chrono::steady_clock::now();
             }
 
-        } else if (measType == MeasurementType::IMU) {
+        } 
+        
+        else if (measType == MeasurementType::IMU) {
             IMUVelocity imuData;
             if (simimuFlag) {
                 imuData = dataServer->getSimIMU();
@@ -265,7 +267,14 @@ int main(int argc, char const* argv[]) {
         else if (measType == MeasurementType::Attitude){
             std::cout<<"We have made it into a attitude function";
             StampedAttiude AttitudeData = dataServer->getAttitude();
+
+            if (startTime > 0 && AttitudeData.stamp < startTime) {
+                continue;
+            }
+
             filter.processAttitudeData(AttitudeData);
+
+            AttitudeDataCounter++;
         }
 
         if (stopTime > 0 && filter.getTime() > stopTime) {
@@ -275,9 +284,8 @@ int main(int argc, char const* argv[]) {
 
     const auto elapsedTime =
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - loopStartTime);
-    std::cout << "Processed " << imuDataCounter << " IMU and " << visionDataCounter << " vision measurements.\n"
-              << "Time taken: " << elapsedTime.count() * 1e-3 << " seconds." << std::endl;
-
+    std::cout << "Processed " << imuDataCounter << " IMU measurements, " << visionDataCounter << " vision measurements and " 
+              << AttitudeDataCounter << "Attitude Measurments.\n" << "Time taken: " << elapsedTime.count() * 1e-3 << " seconds." << std::endl;
     return 0;
 }
 

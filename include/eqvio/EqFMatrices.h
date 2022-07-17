@@ -44,12 +44,14 @@ struct EqFCoordinateSuite {
         outputMatrixCiStar;
 
     /// The output matrix  with equivariance \f$ C_t^\star \f$ or without \f$ C_t \f$.
-    const Eigen::MatrixXd outputMatrixC(
+    const Eigen::MatrixXd outputMatrixCVision(
         const VIOState& xi0, const VIOGroup& X, const VisionMeasurement& y, const bool useEquivariance = true) const;
 
     /// The standard (not equivariant) output matrix block \f$ C_i \f$.
     const Eigen::Matrix<double, 2, 3>
     outputMatrixCi(const Eigen::Vector3d& q0, const liepp::SOT3d& QHat, const GIFT::GICameraPtr& camPtr) const;
+
+    const Eigen::MatrixXd outputMatrixCAttitude(const int N);
 
     /// The continuous-time lift of the correction term \f$ \Delta \f$ from the tangent space at \f$ \mathring{\xi} \f$
     /// to the Lie algebra \f$ \mathfrak{g} \f$.

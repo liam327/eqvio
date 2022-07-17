@@ -21,7 +21,7 @@ using namespace Eigen;
 using namespace std;
 using namespace liepp;
 
-const Eigen::MatrixXd EqFCoordinateSuite::outputMatrixC(
+const Eigen::MatrixXd EqFCoordinateSuite::outputMatrixCVision(
     const VIOState& xi0, const VIOGroup& X, const VisionMeasurement& y, const bool useEquivariance) const {
     // Rows and their corresponding output components
     // [2i, 2i+2): Landmark measurement i
@@ -67,4 +67,10 @@ const Eigen::Matrix<double, 2, 3> EqFCoordinateSuite::outputMatrixCi(
     const Vector3d qHat = QHat.inverse() * q0;
     const Vector2d yHat = camPtr->projectPoint(qHat);
     return outputMatrixCiStar(q0, QHat, camPtr, yHat);
+}
+
+const Eigen::MatrixXd outputMatrixCAttitude(const int N){
+    MatrixXd C = MatrixXd::Zero(3,N);
+    C.block<3,3>(0,6) = MatrixXd::Identity(3,3);
+    return C;
 }
