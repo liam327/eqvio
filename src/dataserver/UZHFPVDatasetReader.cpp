@@ -63,7 +63,7 @@ std::unique_ptr<IMUVelocity> UZHFPVDatasetReader::nextIMU() {
     return std::make_unique<IMUVelocity>(temp);
 }
 
-std::unique_ptr<StampedAttiude> APDatasetReader::nextAttitude() {
+std::unique_ptr<StampedAttiude> UZHFPVDatasetReader::nextAttitude() {
     return nullptr;
 }
 

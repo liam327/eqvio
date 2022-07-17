@@ -75,7 +75,7 @@ std::unique_ptr<StampedImage> ASLDatasetReader::nextImage() {
     return std::make_unique<StampedImage>(temp);
 }
 
-std::unique_ptr<StampedAttiude> APDatasetReader::nextAttitude() {
+std::unique_ptr<StampedAttiude> ASLDatasetReader::nextAttitude() {
     return nullptr;
 }
 
