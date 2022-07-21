@@ -4,7 +4,7 @@ This repository contains the implementation of EqVIO: An Equivariant Filter (EqF
 
 Please see https://pvangoor.github.io/eqvio_docs/ for the documentation.
 
-This fork of the EqVIO allows for attitude innovation from ArduPilot to allow for more accurate attitude data 
+This fork of the EqVIO allows for attitude estimates to be provided by ArduPilot. This allows for more accurate attitude data 
 
 ## Dependencies
 
