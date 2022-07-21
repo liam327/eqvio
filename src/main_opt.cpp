@@ -265,7 +265,6 @@ int main(int argc, char const* argv[]) {
         }
 
         else if (measType == MeasurementType::Attitude){
-            std::cout<<"We have made it into a attitude function";
             StampedAttiude AttitudeData = dataServer->getAttitude();
 
             if (startTime > 0 && AttitudeData.stamp < startTime) {

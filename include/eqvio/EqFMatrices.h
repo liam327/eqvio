@@ -51,8 +51,6 @@ struct EqFCoordinateSuite {
     const Eigen::Matrix<double, 2, 3>
     outputMatrixCi(const Eigen::Vector3d& q0, const liepp::SOT3d& QHat, const GIFT::GICameraPtr& camPtr) const;
 
-    const Eigen::MatrixXd outputMatrixCAttitude(const int N);
-
     /// The continuous-time lift of the correction term \f$ \Delta \f$ from the tangent space at \f$ \mathring{\xi} \f$
     /// to the Lie algebra \f$ \mathfrak{g} \f$.
     const std::function<VIOAlgebra(const Eigen::VectorXd&, const VIOState&)> liftInnovation;

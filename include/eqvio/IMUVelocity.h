@@ -31,7 +31,8 @@ constexpr double GRAVITY_CONSTANT = 9.80665;
  */
 struct StampedAttiude {
     double stamp;
-    Eigen::Vector4d quat;
+    Eigen::Quaterniond quat;
+    //Eigen::Quaternion Q; 
 };
 
 /** @brief An Inertial Measurement Unit (IMU) reading.

@@ -68,9 +68,3 @@ const Eigen::Matrix<double, 2, 3> EqFCoordinateSuite::outputMatrixCi(
     const Vector2d yHat = camPtr->projectPoint(qHat);
     return outputMatrixCiStar(q0, QHat, camPtr, yHat);
 }
-
-const Eigen::MatrixXd outputMatrixCAttitude(const int N){
-    MatrixXd C = MatrixXd::Zero(3,N);
-    C.block<3,3>(0,6) = MatrixXd::Identity(3,3);
-    return C;
-}

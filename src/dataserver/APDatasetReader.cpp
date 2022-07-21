@@ -87,10 +87,10 @@ std::unique_ptr<StampedAttiude> APDatasetReader::nextAttitude() {
     StampedAttiude temp;
     //could maybe do something like 
     temp.stamp = std::stod(attitudeLine[0]);
-    temp.quat[0] = std::stod(attitudeLine[1]);
-    temp.quat[1] = std::stod(attitudeLine[2]);
-    temp.quat[2] = std::stod(attitudeLine[3]);
-    temp.quat[3] = std::stod(attitudeLine[4]);
+    temp.quat.w() = std::stod(attitudeLine[1]);
+    temp.quat.x() = std::stod(attitudeLine[2]);
+    temp.quat.y() = std::stod(attitudeLine[3]);
+    temp.quat.z() = std::stod(attitudeLine[4]);
     //temp.quat not sure here 
     return std::make_unique<StampedAttiude>(temp);
 }

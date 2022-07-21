@@ -187,32 +187,45 @@ bool VIOFilter::integrateUpToTime(const double& newTime, const bool doRiccati) {
 
 //This function will update the state with the measured attitude data 
 void VIOFilter::processAttitudeData(const StampedAttiude& AttitudeMeas){
-    integrateUpToTime(AttitudeMeas.stamp, !settings->fastRiccati);
 
-    //This is for testing purposes 
-    std::cout<<"t:"<<AttitudeMeas.stamp<<"qw:"<<AttitudeMeas.quat[0];
+    bool integrationFlag = integrateUpToTime(AttitudeMeas.stamp, true);
+    if (!integrationFlag || !initialisedFlag)
+        return;
 
-/*     //A small value for the measuremtent noise of the attitude 
-    const double AttitudeNoise = 1e-5; 
-
+    //A small value for the measuremtent noise of the attitude 
+    const double AttitudeNoise = 0.1; 
     const int N = xi0.cameraLandmarks.size();
-
     // --------------------------
     // Compute the EqF innovation
     // --------------------------
-    //Find the rotation matrix nessecary for the innovation ytilda
-    const MatrixXd Rp = AttitudeMeas.quat[0]; 
-    const MatrixXd Rp0 = xi0.sensor.pose.R;
-    const MatrixXd RA = X.A.R;
+    //Find the rotation matrix nessecary for the innovation ytilda 
     
-    const MatrixXd Ct = coordinateSuite->outputMatrixCAttitude(N);
+    const SO3d Rp(AttitudeMeas.quat);
+    Matrix3d m;
+    m << 0, 1, 0,
+         1, 0, 0,
+         0, 0, -1;
+    SO3d Rned;
+    Rned.fromMatrix(m);
+    SO3d Rp_ned = Rned*Rp;
+    //R_NED * Rp 
+    const SO3d Rp0 = xi0.sensor.pose.R;
+    const SO3d RA = X.A.R;
+
+    //std::cout<<"2 gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg";
+    MatrixXd Ct = MatrixXd::Zero(3,21+3*N);
+    //std::cout<<"3ssssssssssssssssssssssssssssssssssssssss";
+    Ct.block<3,3>(0,6) = MatrixXd::Identity(3,3);
+
     const MatrixXd QMat = MatrixXd::Identity(3, 3) * AttitudeNoise;
 
     // Use the discrete update form
     const auto& SInv = (Ct * Sigma * Ct.transpose() + QMat).inverse();
     const auto& K = Sigma * Ct.transpose() * SInv;
 
-    const VectorXd yTilde = MatrixBase::log(Rp0.transpose()*Rp*RA.transpose());
+    const VectorXd yTilde = SO3d::log(Rp0.inverse()*Rp_ned*RA.inverse());
+    std::cout<<yTilde<<std::endl;
+    std::cout<<"."<<std::endl;
     const VectorXd Gamma = K * yTilde;
     assert(!Gamma.hasNaN());
 
@@ -228,7 +241,7 @@ void VIOFilter::processAttitudeData(const StampedAttiude& AttitudeMeas){
     Sigma = Sigma - K * Ct * Sigma;
 
     assert(!Sigma.hasNaN());
-    assert(!X.hasNaN()); */
+    assert(!X.hasNaN());  
 }
 
 void VIOFilter::processVisionData(const VisionMeasurement& measurement) {

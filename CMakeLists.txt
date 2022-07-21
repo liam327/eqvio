@@ -6,7 +6,7 @@ include(CheckCXXCompilerFlag)
 
 
 # Options and settings
-option( EQVIO_BUILD_TESTS "Build Tests" ON)
+option( EQVIO_BUILD_TESTS "Build Tests" OFF)
 option( EQVIO_BUILD_VISUALISATION "Build Visualisation Tool" ON)
 option( EQVIO_BUILD_ROSBAG "Build EqVIO with rosbag reading enabled" OFF)
 option( EQVIO_SUPPORT_CONCEPTS "Build EqVIO using c++20 concepts" ON)
@@ -21,7 +21,7 @@ add_compile_definitions(EQVIO_BUILD_VISUALISATION=$<BOOL:${EQVIO_BUILD_VISUALISA
 add_compile_definitions(EQVIO_BUILD_ROSBAG=$<BOOL:${EQVIO_BUILD_ROSBAG}>)
 add_compile_definitions(EQVIO_SUPPORT_CONCEPTS=$<BOOL:${EQVIO_SUPPORT_CONCEPTS}>)
 
-option( EQVIO_USE_MARCH_NATIVE "Use the flag -march=native" OFF)
+option( EQVIO_USE_MARCH_NATIVE "Use the flag -march=native" ON)
 if (EQVIO_USE_MARCH_NATIVE AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     include(CheckCXXCompilerFlag)
     CHECK_CXX_COMPILER_FLAG("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
