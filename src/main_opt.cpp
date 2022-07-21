@@ -264,7 +264,7 @@ int main(int argc, char const* argv[]) {
             ++imuDataCounter;
         }
 
-        else if (measType == MeasurementType::Attitude){
+        else if ((measType == MeasurementType::Attitude) && (filterSettings.UseAttitudeInnovation)){
             StampedAttiude AttitudeData = dataServer->getAttitude();
 
             if (startTime > 0 && AttitudeData.stamp < startTime) {
