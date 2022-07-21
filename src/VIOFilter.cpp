@@ -198,9 +198,9 @@ void VIOFilter::processAttitudeData(const StampedAttiude& AttitudeMeas){
     // --------------------------
     // Compute the EqF innovation
     // --------------------------
-    //Find the rotation matrix nessecary for the innovation ytilda 
-    
+    //Import the ardupilot attitude estimate 
     const SO3d Rp(AttitudeMeas.quat);
+    //Rotate the ardupilot attitude estimate from NED to ENU
     Matrix3d m;
     m << 0, 1, 0,
          1, 0, 0,
@@ -208,13 +208,11 @@ void VIOFilter::processAttitudeData(const StampedAttiude& AttitudeMeas){
     SO3d Rned;
     Rned.fromMatrix(m);
     SO3d Rp_ned = Rned*Rp;
-    //R_NED * Rp 
+    //Get the other attitudes required for the innovation y_tilde
     const SO3d Rp0 = xi0.sensor.pose.R;
     const SO3d RA = X.A.R;
 
-    //std::cout<<"2 gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg";
     MatrixXd Ct = MatrixXd::Zero(3,21+3*N);
-    //std::cout<<"3ssssssssssssssssssssssssssssssssssssssss";
     Ct.block<3,3>(0,6) = MatrixXd::Identity(3,3);
 
     const MatrixXd QMat = MatrixXd::Identity(3, 3) * AttitudeNoise;
@@ -223,9 +221,8 @@ void VIOFilter::processAttitudeData(const StampedAttiude& AttitudeMeas){
     const auto& SInv = (Ct * Sigma * Ct.transpose() + QMat).inverse();
     const auto& K = Sigma * Ct.transpose() * SInv;
 
+    //Calculate our innovation
     const VectorXd yTilde = SO3d::log(Rp0.inverse()*Rp_ned*RA.inverse());
-    std::cout<<yTilde<<std::endl;
-    std::cout<<"."<<std::endl;
     const VectorXd Gamma = K * yTilde;
     assert(!Gamma.hasNaN());
 
