@@ -68,6 +68,7 @@ struct VIOFilter::Settings {
     double cameraAttitudeProcessVariance = 0.001; ///< The variance of the Wiener process of the camera attitude error
     double cameraPositionProcessVariance = 0.001; ///< The variance of the Wiener process of the camera position error
     double pointProcessVariance = 0.001;          ///< The variance of the Wiener process of the landmark position error
+    double attitudeInnovationProcessVariance = 0.5; ///< The covariance associated with the attitude innovation
 
     double velGyrNoise = 0.1;      ///< The noise of the gyroscope measurements
     double velAccNoise = 0.1;      ///< The noise of the accelerometer measurements
@@ -119,6 +120,7 @@ inline VIOFilter::Settings::Settings(const YAML::Node& configNode) {
     safeConfig(configNode, "processVariance:point", pointProcessVariance);
     safeConfig(configNode, "processVariance:cameraAttitude", cameraAttitudeProcessVariance);
     safeConfig(configNode, "processVariance:cameraPosition", cameraPositionProcessVariance);
+    safeConfig(configNode, "processVariance:attitudeInnovation", attitudeInnovationProcessVariance);
 
     safeConfig(configNode, "measurementNoise:feature", measurementNoise);
     safeConfig(configNode, "measurementNoise:featureOutlierAbs", outlierThresholdAbs);

@@ -192,8 +192,7 @@ void VIOFilter::processAttitudeData(const StampedAttiude& AttitudeMeas){
     if (!integrationFlag || !initialisedFlag)
         return;
 
-    //A small value for the measuremtent noise of the attitude 
-    const double AttitudeNoise = 0.1; 
+
     const int N = xi0.cameraLandmarks.size();
     // --------------------------
     // Compute the EqF innovation
@@ -215,7 +214,7 @@ void VIOFilter::processAttitudeData(const StampedAttiude& AttitudeMeas){
     MatrixXd Ct = MatrixXd::Zero(3,21+3*N);
     Ct.block<3,3>(0,6) = MatrixXd::Identity(3,3);
 
-    const MatrixXd QMat = MatrixXd::Identity(3, 3) * AttitudeNoise;
+    const MatrixXd QMat = MatrixXd::Identity(3, 3) * settings->attitudeInnovationProcessVariance;
 
     // Use the discrete update form
     const auto& SInv = (Ct * Sigma * Ct.transpose() + QMat).inverse();

@@ -284,7 +284,7 @@ int main(int argc, char const* argv[]) {
     const auto elapsedTime =
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - loopStartTime);
     std::cout << "Processed " << imuDataCounter << " IMU measurements, " << visionDataCounter << " vision measurements and " 
-              << AttitudeDataCounter << "Attitude Measurments.\n" << "Time taken: " << elapsedTime.count() * 1e-3 << " seconds." << std::endl;
+              << AttitudeDataCounter << " Attitude Measurments.\n" << "Time taken: " << elapsedTime.count() * 1e-3 << " seconds." << std::endl;
     return 0;
 }
 
