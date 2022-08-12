@@ -222,6 +222,7 @@ void VIOFilter::processAttitudeData(const StampedAttiude& AttitudeMeas){
 
     //Calculate our innovation
     const VectorXd yTilde = SO3d::log(Rp0.inverse()*Rp_ned*RA.inverse());
+    //std::cout<<"innovation"<<yTilde<<"\n";
     const VectorXd Gamma = K * yTilde;
     assert(!Gamma.hasNaN());
 
